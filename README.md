@@ -112,7 +112,7 @@ The tool accepts ad-hoc Datalog programs via JSON:
 
 **Status codes:**
 - `ok` - Fixed point found, derived facts returned
-- `unsat` - F2 solver proved no fixed point exists (with witness)
+- `unsat` - F2 solver proved no fixed point exists (with witness, determinism verified via JCS)
 - `unknown` - Iteration capped / maxAtoms limit reached
 - `error` - Parse error or other failure
 
