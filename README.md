@@ -22,7 +22,7 @@ Part of the broader HeytingLean formal verification project: https://apoth3osis.
 
 This repository contains a complete evaluation framework for assessing LLM tool-use capabilities on formal logic tasks. The framework uses the **TensorLogic Datalog engine** - a certified Lean 4 implementation supporting multiple inference semantics (boolean, F2/XOR, fuzzy, Heyting).
 
-**Key Finding**: The F2 (XOR) solver correctly detects and reports inconsistent recursive systems rather than producing misleading results. When given the cyclic rules `q :- p` and `p :- q` with base fact `p=1`, the solver reports "no fixed point found" because the induced equation `p = 1 XOR p` has no solution in GF(2).
+**Key Finding**: The F2 (XOR) solver treats UNSAT as a first-class result, returning a structured `status: "unsat"` response with a witness when no fixed point exists. When given the cyclic rules `q :- p` and `p :- q` with base fact `p=1`, the solver returns UNSAT with a canonical witness because the induced equation `p = 1 XOR p` has no solution in GF(2).
 
 ### Evaluation Results (GPT-5.2, 2026-01-14)
 
@@ -84,6 +84,7 @@ The tool accepts ad-hoc Datalog programs via JSON:
 
 #### 2.3 Output Format
 
+**Success (status: "ok")**
 ```json
 {
   "bundle_hash": "78957183c7774793fb0a62fac81e2a4873177bcf293712433022478e637eeda5",
@@ -93,6 +94,25 @@ The tool accepts ad-hoc Datalog programs via JSON:
   "status": "ok"
 }
 ```
+
+**UNSAT (status: "unsat")** - F2 solver found no fixed point
+```json
+{
+  "status": "unsat",
+  "message": "f2solve: UNSAT (no fixed point)",
+  "witness": {
+    "atoms": ["p", "q"],
+    "init": [1, 0],
+    "contribs": [[0, 1], [1, 0]]
+  }
+}
+```
+
+**Status codes:**
+- `ok` - Fixed point found, derived facts returned
+- `unsat` - F2 solver proved no fixed point exists (with witness)
+- `unknown` - Iteration capped / maxAtoms limit reached
+- `error` - Parse error or other failure
 
 ### 3. Inference Semantics
 
@@ -120,7 +140,7 @@ The induced system is:
 - `q = p`
 - `p = 1 XOR q`
 
-Substituting: `p = 1 XOR p`, which has **no solution** in GF(2). The solver correctly reports this as an error rather than producing arbitrary output.
+Substituting: `p = 1 XOR p`, which has **no solution** in GF(2). The solver returns `status: "unsat"` with a canonical witness (atoms, init bits, contribution matrix) rather than producing arbitrary output.
 
 #### 3.3 Fuzzy Mode
 
@@ -164,14 +184,18 @@ p :- q.
 
 **Boolean Result**: `{p, q}` - Both atoms are true (mutual support converges)
 
-**F2 Result**: `error: no fixed point found`
+**F2 Result**:
+```json
+{"status":"unsat","message":"f2solve: UNSAT (no fixed point)","witness":{...}}
+```
 
 **GPT-5.2 Analysis**:
 - Correctly ran both modes
 - Explained that XOR semantics leads to `p = 1 XOR p` (unsatisfiable)
 - Identified that boolean OR is idempotent while XOR is not
+- The UNSAT witness provides atoms, init bits, and contribution matrix for verification
 
-**Assessment**: Demonstrates semantic understanding of non-monotone logics.
+**Assessment**: Demonstrates semantic understanding of non-monotone logics. The first-class UNSAT response enables LLMs to reason about *why* no solution exists.
 
 #### Task C3: Program Repair
 
