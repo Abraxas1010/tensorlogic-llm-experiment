@@ -1,0 +1,33 @@
+{
+  "task_id": "A1",
+  "valid_json": 1,
+  "correct_rules": 2,
+  "correct_facts": 1,
+  "correct_answer": 2,
+  "explanation": 1,
+  "total": 7,
+  "max_total": 7,
+  "details": {
+    "json_validity": "Found 2 valid JSON block(s)",
+    "rules": "Correct rule count (2)",
+    "facts": "Correct fact count (4)",
+    "accuracy": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "expected": [
+        "reach(a)",
+        "reach(b)",
+        "reach(c)",
+        "reach(d)"
+      ],
+      "actual": [
+        "reach(b)",
+        "reach(a)",
+        "reach(d)",
+        "reach(c)"
+      ]
+    },
+    "explanation_terms": 6
+  }
+}

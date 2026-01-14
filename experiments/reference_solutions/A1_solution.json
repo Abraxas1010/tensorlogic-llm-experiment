@@ -1,0 +1,59 @@
+{
+  "task_id": "A1",
+  "title": "Graph Reachability",
+  "request": {
+    "program": {
+      "rules": [
+        {
+          "head": {"pred": "reach", "args": [{"var": "X"}]},
+          "body": [{"pred": "start", "args": [{"var": "X"}]}],
+          "weight": 1.0
+        },
+        {
+          "head": {"pred": "reach", "args": [{"var": "Y"}]},
+          "body": [
+            {"pred": "reach", "args": [{"var": "X"}]},
+            {"pred": "edge", "args": [{"var": "X"}, {"var": "Y"}]}
+          ],
+          "weight": 1.0
+        }
+      ]
+    },
+    "facts": [
+      {"atom": {"pred": "start", "args": ["a"]}, "weight": 1.0},
+      {"atom": {"pred": "edge", "args": ["a", "b"]}, "weight": 1.0},
+      {"atom": {"pred": "edge", "args": ["b", "c"]}, "weight": 1.0},
+      {"atom": {"pred": "edge", "args": ["c", "d"]}, "weight": 1.0}
+    ],
+    "config": {
+      "mode": "boolean",
+      "bot": "monotone",
+      "max_iter": 50
+    }
+  },
+  "expected_derived_facts": [
+    "reach(a)",
+    "reach(b)",
+    "reach(c)",
+    "reach(d)"
+  ],
+  "expected_iterations": 4,
+  "explanation": {
+    "derivation_trace": [
+      "Iteration 0: start(a) is a base fact",
+      "Iteration 1: reach(a) derived from start(a) via rule 1",
+      "Iteration 2: reach(b) derived from reach(a) + edge(a,b) via rule 2",
+      "Iteration 3: reach(c) derived from reach(b) + edge(b,c) via rule 2",
+      "Iteration 4: reach(d) derived from reach(c) + edge(c,d) via rule 2"
+    ],
+    "key_insight": "The recursive rule propagates reachability along edges until fixpoint"
+  },
+  "scoring": {
+    "valid_json": 1,
+    "correct_rules": 2,
+    "correct_facts": 1,
+    "correct_answer": 2,
+    "explanation": 1,
+    "total": 7
+  }
+}
