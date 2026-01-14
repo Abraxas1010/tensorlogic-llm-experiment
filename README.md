@@ -102,8 +102,10 @@ The tool accepts ad-hoc Datalog programs via JSON:
   "message": "f2solve: UNSAT (no fixed point)",
   "witness": {
     "atoms": ["p", "q"],
-    "init": [1, 0],
-    "contribs": [[0, 1], [1, 0]]
+    "atoms_count": 2,
+    "init_bits": [1, 0],
+    "contribs": [[0, 1], [1, 0]],
+    "conflict_explanation": "x = init ⊕ T(x) has no solution in GF(2)"
   }
 }
 ```
@@ -193,9 +195,13 @@ p :- q.
 - Correctly ran both modes
 - Explained that XOR semantics leads to `p = 1 XOR p` (unsatisfiable)
 - Identified that boolean OR is idempotent while XOR is not
-- The UNSAT witness provides atoms, init bits, and contribution matrix for verification
+- The UNSAT witness provides:
+  - `atoms` / `atoms_count` - variables in the system
+  - `init_bits` - initial values from base facts
+  - `contribs` - contribution matrix from rules
+  - `conflict_explanation` - human-readable reason for UNSAT
 
-**Assessment**: Demonstrates semantic understanding of non-monotone logics. The first-class UNSAT response enables LLMs to reason about *why* no solution exists.
+**Assessment**: Demonstrates semantic understanding of non-monotone logics. The first-class UNSAT response with structured witness enables LLMs to reason about *why* no solution exists.
 
 #### Task C3: Program Repair
 
