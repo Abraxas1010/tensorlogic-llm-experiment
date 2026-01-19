@@ -358,13 +358,8 @@ RESEARCHER_BUNDLE/
 
 ## License
 
-**Copyright (c) 2022-2026 Equation Capital LLC. All rights reserved.**
-
-This software is available under a **dual licensing model**:
-- **AGPL-3.0** for open source, academic, and personal use
-- **Commercial License** available for proprietary use
-
-Contact: rgoodman@apoth3osis.io
+This project is provided under the Apoth3osis License Stack v1.
+See `LICENSE.md` and the files under `licenses/`.
 
 ## Citation
 
